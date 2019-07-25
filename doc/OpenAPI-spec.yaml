@@ -1,0 +1,398 @@
+swagger: '2.0'
+info:
+  description: "Simple API headlines application"
+  version: "1.0.0"
+  title: "Headlines"
+  contact: 
+    name: "Dominik Hlavac Duran"
+host: "headliness.herokuapp.com"
+basePath: "/api/v1"
+schemes: 
+    - "https"
+consumes: 
+    - "application/json"
+produces: 
+    - "application/json"
+paths:
+  /headlines:
+    get:
+      description: "Returns all headlines"
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: "Headlines response"
+          schema:
+            type: array
+            items:
+                $ref: '#/definitions/Headline'
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+    post:
+      description: "Creates a new headline.  Duplicates are allowed"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: publisher
+          in: query
+          required: false
+          type: string
+          x-example: "Ogrimarpost"
+        - name: text
+          in: query
+          required: false
+          type: string
+          x-example: "Thrall is best chief"
+        - name: origin
+          in: query
+          required: false
+          type: string
+          x-example: "Reality"
+      responses:
+        '200':
+          description: "Returns Succes message and created object data"
+          schema:
+            $ref: '#/definitions/Headline_message'
+        '404':
+          description: "Headline not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+          
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+  /headlines/{id}:
+    get:
+      description: "Returns a specific headline by its id"
+      produces:
+        - application/json
+      parameters: 
+        - name: "id"
+          in: "path"
+          description: "ID of headline to fetch"
+          required: true
+          type: "integer"
+          format: "int64"
+        
+      responses:
+        '200':
+          description: "Returns specific headline data"
+          schema:
+            $ref: '#/definitions/Headline_message'
+        '404':
+          description: "Headline not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+    put:
+      description: "Update a headline by its id"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: publisher
+          in: query
+          required: false
+          type: string
+          x-example: "Ogrimarpost"
+        - name: text
+          in: query
+          required: false
+          type: string
+          x-example: "Thrall is best chief"
+        - name: origin
+          in: query
+          required: false
+          type: string
+          x-example: "Reality"
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        '200':
+          description: "Returns Succes message and created object data"
+          schema:
+            $ref: '#/definitions/Headline_message'
+        '404':
+          description: "Headline not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+    delete:
+      description: "Delete a specific headline by its id"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of headline to fetch"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        '200':
+          description: "Successfuly deleted headline"
+          schema:
+            $ref: '#/definitions/Headline_message'
+        '404':
+          description: "Headline not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+  /headlines/{id}/comments:
+    get:
+      description: "Fetch all comments of specific headline definded by ID"
+      produces:
+        - application/json
+      parameters: 
+        - name: "id"
+          in: "path"
+          description: "ID of headline to fetch comments"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        '200':
+          description: "Comment response"
+          schema:
+            type: array
+            items:
+                $ref: '#/definitions/Comment'
+        '404':
+          description: "Headline not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+          
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+    post:
+      description: "Creates a new comment for specific headline"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of headline to fetch comments"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "comment data"
+          in: "querry"
+          schema:
+            $ref: "#/definitions/Comment_data"
+      responses:
+        '200':
+          description: "Returns Succes message and created object data"
+          schema:
+            $ref: '#/definitions/Comment_message'
+        '404':
+          description: "Headline not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+  /headlines/{id_headline}/comments/{id_comment}:
+    get:
+      description: "Fetch specific comment of specific headline both defined by its ID's"
+      produces:
+        - application/json
+      parameters: 
+        - name: "id_headline"
+          in: "path"
+          description: "ID of headline to fetch comments"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "id_comment"
+          in: "path"
+          description: "ID of comment to fetch"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        '200':
+          description: "Successful get comment data"
+          schema:
+            $ref: '#/definitions/Comment_message'
+        '404':
+          description: "Headline or comment not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+    put:
+      description: "Update specific comment of specific headline both defined by its ID's"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: "id_headline"
+          in: "path"
+          description: "ID of headline to update comments"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "id_comment"
+          in: "path"
+          description: "ID of comment to update"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "Comment"
+          in: querry
+          description: "Comment to update to headline"
+          required: true
+          schema:
+            $ref: '#/definitions/Comment_data' 
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Comment_message'
+        '404':
+          description: "Headline or comment not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+    delete:
+      description: "Delete specific comment of specific headline both defined by its ID's"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters: 
+        - name: "id_headline"
+          in: "path"
+          description: "ID of headline to delete comments"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "id_comment"
+          in: "path"
+          description: "ID of comment to be delete"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Comment_message'
+        '404':
+          description: "Headline or comment not found"
+          schema: 
+              $ref: "#/definitions/Not_found"
+        default: 
+            description: "unexpected error"
+            schema: 
+              $ref: "#/definitions/ErrorModel"
+definitions:
+  Headline:
+    properties:
+      id:
+        type: integer
+        format: int32
+      text:
+        type: string
+      origin:
+        type: string
+      publisher:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  Headline_message:
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      data:
+        $ref: '#/definitions/Headline'
+  Not_found:
+    properties:
+      message:
+        type: string
+  Comment:
+    properties:
+      headline_id:
+        type: integer
+        format: int32
+      data:
+        $ref: "#/definitions/Comment_data"
+  Comment_data:
+    properties:
+      id:
+        type: integer
+        format: int32
+      up_vote:
+        type: integer
+        format: int32
+      author:
+        type: string
+      down_vote:
+        type: integer
+        format: int32
+      text:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  Comment_message:
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      data:
+        $ref: '#/definitions/Comment'
+  ErrorModel: 
+      type: "object"
+      required: 
+        - "status"
+        - "code"
+        - "message"
+      properties: 
+        code: 
+          type: "integer"
+          format: "int32"
+        message: 
+          type: "string"
+        status:
+          type: "string"
